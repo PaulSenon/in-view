@@ -5,7 +5,7 @@
   "repository": "git@bitbucket.org:euronews-sdd/in-view.git",
   "author": "Paul_Senon <paul.senon@euronews.com>",
   "license": "MIT",
-  "description": "dependency free inView lib based on ",
+  "description": "dependency free inView lib based on IntersectionObserver",
   "scripts": {
     "test": "jest"
   },

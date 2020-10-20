@@ -101,7 +101,7 @@ They are used to register a callback to a specific intersection event with the  
 
 | Parameter | Type | Default | Description |
 |:----------|:-----|:--------|:------------|
-|`elementOrElements`|Array\<DomElem\> \|\| DomElem|**REQUIRED**|The element(s) to observe|
+|`elementOrElements`|Array[DomElem] OR DomElem|**REQUIRED**|The element(s) to observe|
 |`callback`|Function|**REQUIRED**|The callback giving you the `entry` object from IntersectionObserver as param. You can access the triggering DomElem by accessing `entry.target`|
 
 ### The UNregistering methods:
@@ -114,9 +114,20 @@ They are used to unregister callback on different levels:
 
 | Parameter | Type | Default | Description |
 |:----------|:-----|:--------|:------------|
-|`elementOrElements`|Array\<DomElem\> \|\| DomElem|**REQUIRED**|The element(s) to observe|
+|`elementOrElements`|Array[DomElem] OR DomElem|**REQUIRED**|The element(s) to observe|
 |`event`|String|**REQUIRED**|The event a callback is attached to. Must be one of [`'entered'`, `'entering'`, `'leaving'`, `'left'`]|
 
 And that pretty much it...
 
 Enjoy :)
+
+# How to contribute ?
+
+* clone this repo
+* do `yarn` to install dependencies (just for jest) 
+* create branch from master
+* dev
+* create Pull Request toward master
+* wait for one review & for CI to pass
+* merge master
+* tag a new version (use semantic versioning 2.0)
