@@ -1,0 +1,14 @@
+definitions:
+  tests: &tests
+    name: Tests
+    image: node:12.10.0
+    caches:
+      - node
+    script:
+      - yarn
+      - yarn test
+
+pipelines:
+  pull-requests:
+    '**':
+      - step: *tests
