@@ -1,6 +1,6 @@
 # What is this ?
 
-Because the 'in-view' lib used over different euronews-front apps is no longer maintained and has issues, we decided to create our own version, using IntersectionObserver for better performances.
+Because the 'in-view' lib used over different euronews-front apps is no longer maintained and has issues, we decided to create our own version dependency free and using IntersectionObserver for better performances.
 
 # To do what ?
 
@@ -10,6 +10,7 @@ Mainly to lazyload stuff, but if can also be used to deactivate/unload stuff tha
 * 'entered' (when something is plainly in the viewport)
 * 'leaving' (when something is leaving the viewport)
 * 'left' (when something is plainly outside of the viewport)
+* 'visible' (when something is 'entering' or 'leaving' or 'entered') **<= best choice force lazyload**
 
 # How do I use it ?
 
@@ -80,11 +81,11 @@ const myObjectsToLazyload = [...document.querySelectorAll('img.lazyload')]; // I
 
 inView.onVisible(myObjectToLazyload, (entry) => {
     const element = entry.target;
-    element.src = element.dataset.src; // For example, if images, I just switch the data-src in src so the picture loads
+    element.src = element.dataset.src; // For example, for images, I just set img src with the data-src so the picture loads
 
-    // here we don't wank to trigger one lazyloaded image anymore so we unregister it
+    // here we don't want to trigger lazyloaded anymore on this particular image so we unregister it
     inView.unobserveEvent(element, 'entering');
-    // since here we did not registered callback on other events than 'entering', you can simply do: inView.unobserve()
+    // since here we did not registered callback on other events than 'visible', we can simply do: inView.unobserve()
 });
 ```
 
