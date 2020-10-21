@@ -39,35 +39,39 @@ class InView {
 
         // une unique instance d'IntersectionObserver qui fait tout
         this.intersectionObserver = new IntersectionObserver(entries => entries.map(entry => {
-            const element = entry.target;
+            const {
+                target,
+                intersectionRatio,
+                isIntersecting,
+            } = entry;
 
             // ENTERED
-            if(entry.intersectionRatio === 1){
-                this._getState(element).isEntered = true;
-                const cb = this._getStateCallback(element, EVENT.ENTERED);
+            if(intersectionRatio === 1){
+                this._getState(target).isEntered = true;
+                const cb = this._getStateCallback(target, EVENT.ENTERED);
                 if(cb) cb(entry);
                 return;
             }
 
             // LEFT
-            if(entry.intersectionRatio === 0){
-                this._getState(element).isEntered = false;
-                const cb = this._getStateCallback(element, EVENT.LEFT);
+            if(intersectionRatio === 0){
+                this._getState(target).isEntered = false;
+                const cb = this._getStateCallback(target, EVENT.LEFT);
                 if(cb) cb(entry);
                 return;
             }
 
             // TRANSITION STATES
-            if (entry.isIntersecting) {
+            if (isIntersecting) {
                 // LEAVING
-                if(this._getState(element).isEntered){
-                    const cb = this._getStateCallback(element, EVENT.LEAVING);
+                if(this._getState(target).isEntered){
+                    const cb = this._getStateCallback(target, EVENT.LEAVING);
                     if(cb) cb(entry);
                     return;
                 }
                 // ENTERING
                 else{
-                    const cb = this._getStateCallback(element, EVENT.ENTERING);
+                    const cb = this._getStateCallback(target, EVENT.ENTERING);
                     if(cb) cb(entry);
                     return;
                 }
