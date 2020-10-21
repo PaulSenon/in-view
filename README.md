@@ -1,16 +1,16 @@
 # What is this ?
 
-Because the 'in-view' lib used over different euronews-front apps is no longer maintained and has issues, we decided to create our own version dependency free and using IntersectionObserver for better performances.
+Because the 'in-view' lib used over different euronews-front apps is no longer maintained and has issues, we decided to create our own version, dependency free, and using IntersectionObserver for better performances.
 
 # To do what ?
 
-Mainly to lazyload stuff, but if can also be used to deactivate/unload stuff that are no more on screen since you'll be able to register callback to 4 different events:
+Mainly to lazyload stuff, but it can also be used to deactivate/unload stuff that are no more on screen since you'll be able to register callback to 5 different events:
 
 * 'entering' (when something is coming inside the viewport)
 * 'entered' (when something is plainly in the viewport)
 * 'leaving' (when something is leaving the viewport)
 * 'left' (when something is plainly outside of the viewport)
-* 'visible' (when something is 'entering' or 'leaving' or 'entered') **<= best choice force lazyload**
+* 'visible' (when something is 'entering' or 'leaving' or 'entered') **<= best choice for lazyload**
 
 # How do I use it ?
 
@@ -35,7 +35,7 @@ Here you may want to use the `import` or `require` syntax:
 
 #### import
 
-* `import InView from 'in-view';`
+* `import InView from 'in-view';` _(needs to to checked)_
 
 #### require
 
@@ -56,11 +56,11 @@ const inView = new InView({
 ```
 
 It takes an object as unique parameter. 
-Here is the doc for each property:
+Here is the doc for each property of this object:
 
 | Property | Type | Default | Description |
 |:---------|:-----|:--------|:------------|
-|`rootElement`|**DOM element**|viewport|The area that will trigger your callbacks when other element intersect it. By default it's the viewport, so let it blank if you just need basic lazyload :)|
+|`rootElement`|**DOM element**|viewport|The area that will trigger your callbacks when other elements intersect it. By default it's the viewport, so let it blank if you just need basic lazyload :)|
 |`rootMarginTop`|**number** (in px)|`0`|Used to extend the observer hitbox on top. You can set both positive or negative values.|
 |`rootMarginRight`|**number** (in px)|`0`|Used to extend the observer hitbox on right. You can set both positive or negative values.|
 |`rootMarginBottom`|**number** (in px)|`0`|Used to extend the observer hitbox on bottom. **This is typically the prop you'll set in a basic lazyload scenario. A positive value will make callback triggered before you see the element in viewport.** You can set both positive or negative values.|
@@ -72,35 +72,36 @@ Because all properties are optional, the following instantiation is totally vali
 const inView = new InView();
 ```
 
-Then here is how can use this lib for a basic lazyload of images 200px before they enter the viewport:
+But you need to register your callback now !
+Then here is a practical example of how can use this lib for a basic lazyload of images 200px before they enter the viewport:
 
 ```JavaScript
 const inView = new InView({ rootMarginBottom: 200 });
 
-const myObjectsToLazyload = [...document.querySelectorAll('img.lazyload')]; // I cast it as a real js array because querySelectorAll does not return a clean one)
+const myObjectsToLazyload = document.querySelectorAll('img.lazyload'); // no worry, even this HTMLCollection (not really an array) is handled by the lib
 
 inView.onVisible(myObjectToLazyload, (entry) => {
     const element = entry.target;
     element.src = element.dataset.src; // For example, for images, I just set img src with the data-src so the picture loads
 
-    // here we don't want to trigger lazyloaded anymore on this particular image so we unregister it
-    inView.unobserveEvent(element, 'entering');
+    // here we don't want to trigger the lazyload anymore on this particular image so we unregister it
+    inView.unobserveEvent(element, 'visible');
     // since here we did not registered callback on other events than 'visible', we can simply do: inView.unobserve()
 });
 ```
 
-> Note: prefer using `onVisible` over `onEntering` for lazyloading, because, considering the example above, if user refreshes with images already in viewport you'll want to trigger their lazyload when page loads.
+> Note: prefer using `onVisible` over `onEntering` for lazyloading, because, considering the example above, if user refreshes with images already in viewport (page not scrolled to top) you'll want to trigger their lazyload when page loads.
 
 From your `InView` instance you have access to several methods. Here is the detail:
 
 ### The registering methods:
 
-They are used to register a callback to a specific intersection event with the  inView rootElement
+They are used to register a callback to a specific intersection event with the inView rootElement
 
 * `onEntered(elementOrElements, callback)`
 * `onEntering(elementOrElements, callback)`
 * `onLeaving(elementOrElements, callback)`
-* `onVisible(elementOrElements, callback)`: _'entered' + 'entering' + 'leaving' but ensure it is called only once each time it's visible_
+* `onVisible(elementOrElements, callback)`: _'entered' + 'entering' + 'leaving' but it ensure it is called only once each time it's visible_
 * `onLeft(elementOrElements, callback)`
 * `onNotVisible(elementOrElements, callback)`: _alias onLeft()_
 
@@ -120,7 +121,7 @@ They are used to unregister callback on different levels:
 | Parameter | Type | Default | Description |
 |:----------|:-----|:--------|:------------|
 |`elementOrElements`|Array[DomElem] OR DomElem|**REQUIRED**|The element(s) to observe|
-|`event`|String|**REQUIRED**|The event a callback is attached to. Must be one of [`'entered'`, `'entering'`, `'leaving'`, `'left'`]|
+|`event`|String|**REQUIRED**|The event a callback is attached to. Must be one of [`'entered'`, `'entering'`, `'leaving'`, `'left'`, `'visible'`]|
 
 And that pretty much it...
 
@@ -135,4 +136,4 @@ Enjoy :)
 * create Pull Request toward master
 * wait for one review & for CI to pass
 * merge master
-* tag a new version (use semantic versioning 2.0)
+* tag a new version (using semantic versioning 2.0)
