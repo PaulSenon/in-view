@@ -99,7 +99,7 @@ They are used to register a callback to a specific intersection event with the  
 * `onEntered(elementOrElements, callback)`
 * `onEntering(elementOrElements, callback)`
 * `onLeaving(elementOrElements, callback)`
-* `onVisible(elementOrElements, callback)`: _'entered' + 'entering' + 'leaving'_
+* `onVisible(elementOrElements, callback)`: _'entered' + 'entering' + 'leaving' but ensure it is called only once each time it's visible_
 * `onLeft(elementOrElements, callback)`
 * `onNotVisible(elementOrElements, callback)`: _alias onLeft()_
 

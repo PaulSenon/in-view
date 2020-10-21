@@ -142,7 +142,7 @@ describe('InView states', () => {
             inView._addState(element)
             expect(inView.states).toStrictEqual([
                 ...testStateCopy, 
-                {element: 'testNew', isEntered: false, callbacks: {}}
+                {element: 'testNew', isEntered: false, isVisible: false, callbacks: {}}
             ]);
         });
     });
@@ -200,7 +200,7 @@ describe('InView states', () => {
             inView._addStateCallback(element, 'left', testCallback);
             expect(inView.states).toStrictEqual([
                 ...testStateCopy,
-                {element: 'testNew', isEntered: false, callbacks: {left: testCallback}},
+                {element: 'testNew', isEntered: false, isVisible: false, callbacks: {left: testCallback}},
             ]);
         });
     });
@@ -317,8 +317,8 @@ describe('InView public methods', () => {
                 
                 inView.on('entered', testElements, testCallback1);
                 expect(inView.states).toStrictEqual([
-                    {element: testElements[0], isEntered: false, callbacks: {entered: testCallback1}},
-                    {element: testElements[1], isEntered: false, callbacks: {entered: testCallback1}}
+                    {element: testElements[0], isEntered: false, isVisible: false, callbacks: {entered: testCallback1}},
+                    {element: testElements[1], isEntered: false, isVisible: false, callbacks: {entered: testCallback1}}
                 ]);
                 expect(inView.intersectionObserver.elements.length).toBe(2);
             });
@@ -330,16 +330,16 @@ describe('InView public methods', () => {
     
                 inView.on('entered', testElements, testCallback1);
                 expect(inView.states).toStrictEqual([
-                    {element: testElements[0], isEntered: false, callbacks: {entered: testCallback1}},
-                    {element: testElements[1], isEntered: false, callbacks: {entered: testCallback1}}
+                    {element: testElements[0], isEntered: false, isVisible: false, callbacks: {entered: testCallback1}},
+                    {element: testElements[1], isEntered: false, isVisible: false, callbacks: {entered: testCallback1}}
                 ]);
                 expect(inView.intersectionObserver.elements.length).toBe(2);
     
                 // one more event
                 inView.on('leaving', testElements, testCallback2);
                 expect(inView.states).toStrictEqual([
-                    {element: testElements[0], isEntered: false, callbacks: {entered: testCallback1, leaving: testCallback2}},
-                    {element: testElements[1], isEntered: false, callbacks: {entered: testCallback1, leaving: testCallback2}}
+                    {element: testElements[0], isEntered: false, isVisible: false, callbacks: {entered: testCallback1, leaving: testCallback2}},
+                    {element: testElements[1], isEntered: false, isVisible: false, callbacks: {entered: testCallback1, leaving: testCallback2}}
                 ]);
                 expect(inView.intersectionObserver.elements.length).toBe(2);
             });    
@@ -352,16 +352,16 @@ describe('InView public methods', () => {
                 
                 inView.on(testEvent, testElements, testCallback1);
                 expect(inView.states).toStrictEqual([
-                    {element: testElements[0], isEntered: false, callbacks: {entered: testCallback1}},
-                    {element: testElements[1], isEntered: false, callbacks: {entered: testCallback1}}
+                    {element: testElements[0], isEntered: false, isVisible: false, callbacks: {entered: testCallback1}},
+                    {element: testElements[1], isEntered: false, isVisible: false, callbacks: {entered: testCallback1}}
                 ]);
                 expect(inView.intersectionObserver.elements.length).toBe(2);
     
                 // rewrite one callback
                 inView.on(testEvent, testElements, testCallback2);
                 expect(inView.states).toStrictEqual([
-                    {element: testElements[0], isEntered: false, callbacks: {entered: testCallback2}},
-                    {element: testElements[1], isEntered: false, callbacks: {entered: testCallback2}}
+                    {element: testElements[0], isEntered: false, isVisible: false, callbacks: {entered: testCallback2}},
+                    {element: testElements[1], isEntered: false, isVisible: false, callbacks: {entered: testCallback2}}
                 ]);
                 expect(inView.intersectionObserver.elements.length).toBe(2);
             });   
@@ -375,7 +375,7 @@ describe('InView public methods', () => {
                 
                 inView.on('entered', testElement, testCallback1);
                 expect(inView.states).toStrictEqual([
-                    {element: testElement, isEntered: false, callbacks: {entered: testCallback1}}
+                    {element: testElement, isEntered: false, isVisible: false, callbacks: {entered: testCallback1}}
                 ]);
                 expect(inView.intersectionObserver.elements.length).toBe(1);
             });
@@ -387,12 +387,12 @@ describe('InView public methods', () => {
                 
                 inView.on('entered', testElement, testCallback1);
                 expect(inView.states).toStrictEqual([
-                    {element: testElement, isEntered: false, callbacks: {entered: testCallback1}}
+                    {element: testElement, isEntered: false, isVisible: false, callbacks: {entered: testCallback1}}
                 ]);
                 expect(inView.intersectionObserver.elements.length).toBe(1);
                 inView.on('left', testElement, testCallback2);
                 expect(inView.states).toStrictEqual([
-                    {element: testElement, isEntered: false, callbacks: {entered: testCallback1, left: testCallback2}},
+                    {element: testElement, isEntered: false, isVisible: false, callbacks: {entered: testCallback1, left: testCallback2}},
                 ]);
                 expect(inView.intersectionObserver.elements.length).toBe(1);
             });    
@@ -405,12 +405,12 @@ describe('InView public methods', () => {
                 
                 inView.on(testEvent, testElement, testCallback1);
                 expect(inView.states).toStrictEqual([
-                    {element: testElement, isEntered: false, callbacks: {entered: testCallback1}}
+                    {element: testElement, isEntered: false, isVisible: false, callbacks: {entered: testCallback1}}
                 ]);
                 expect(inView.intersectionObserver.elements.length).toBe(1);
                 inView.on(testEvent, testElement, testCallback2);
                 expect(inView.states).toStrictEqual([
-                    {element: testElement, isEntered: false, callbacks: {entered: testCallback2}},
+                    {element: testElement, isEntered: false, isVisible: false, callbacks: {entered: testCallback2}},
                 ]);
                 expect(inView.intersectionObserver.elements.length).toBe(1);
             });   
@@ -427,16 +427,16 @@ describe('InView public methods', () => {
 
             inView.onEntered(testElements, testCallback1);
             expect(inView.states).toStrictEqual([
-                {element: testElements[0], isEntered: false, callbacks: {entered: testCallback1}},
-                {element: testElements[1], isEntered: false, callbacks: {entered: testCallback1}}
+                {element: testElements[0], isEntered: false, isVisible: false, callbacks: {entered: testCallback1}},
+                {element: testElements[1], isEntered: false, isVisible: false, callbacks: {entered: testCallback1}}
             ]);
             expect(inView.intersectionObserver.elements.length).toBe(2);
 
             // rewrite one to test we can also pass one element
             inView.onEntered(testElements[0], testCallback2);
             expect(inView.states).toStrictEqual([
-                {element: testElements[0], isEntered: false, callbacks: {entered: testCallback2}},
-                {element: testElements[1], isEntered: false, callbacks: {entered: testCallback1}}
+                {element: testElements[0], isEntered: false, isVisible: false, callbacks: {entered: testCallback2}},
+                {element: testElements[1], isEntered: false, isVisible: false, callbacks: {entered: testCallback1}}
             ]);
             expect(inView.intersectionObserver.elements.length).toBe(2);
         });
@@ -448,16 +448,16 @@ describe('InView public methods', () => {
 
             inView.onEntering(testElements, testCallback1);
             expect(inView.states).toStrictEqual([
-                {element: testElements[0], isEntered: false, callbacks: {entering: testCallback1}},
-                {element: testElements[1], isEntered: false, callbacks: {entering: testCallback1}}
+                {element: testElements[0], isEntered: false, isVisible: false, callbacks: {entering: testCallback1}},
+                {element: testElements[1], isEntered: false, isVisible: false, callbacks: {entering: testCallback1}}
             ]);
             expect(inView.intersectionObserver.elements.length).toBe(2);
 
             // rewrite one to test we can also pass one element
             inView.onEntering(testElements[0], testCallback2);
             expect(inView.states).toStrictEqual([
-                {element: testElements[0], isEntered: false, callbacks: {entering: testCallback2}},
-                {element: testElements[1], isEntered: false, callbacks: {entering: testCallback1}}
+                {element: testElements[0], isEntered: false, isVisible: false, callbacks: {entering: testCallback2}},
+                {element: testElements[1], isEntered: false, isVisible: false, callbacks: {entering: testCallback1}}
             ]);
             expect(inView.intersectionObserver.elements.length).toBe(2);
         });
@@ -469,16 +469,16 @@ describe('InView public methods', () => {
 
             inView.onLeaving(testElements, testCallback1);
             expect(inView.states).toStrictEqual([
-                {element: testElements[0], isEntered: false, callbacks: {leaving: testCallback1}},
-                {element: testElements[1], isEntered: false, callbacks: {leaving: testCallback1}}
+                {element: testElements[0], isEntered: false, isVisible: false, callbacks: {leaving: testCallback1}},
+                {element: testElements[1], isEntered: false, isVisible: false, callbacks: {leaving: testCallback1}}
             ]);
             expect(inView.intersectionObserver.elements.length).toBe(2);
 
             // rewrite one to test we can also pass one element
             inView.onLeaving(testElements[0], testCallback2);
             expect(inView.states).toStrictEqual([
-                {element: testElements[0], isEntered: false, callbacks: {leaving: testCallback2}},
-                {element: testElements[1], isEntered: false, callbacks: {leaving: testCallback1}}
+                {element: testElements[0], isEntered: false, isVisible: false, callbacks: {leaving: testCallback2}},
+                {element: testElements[1], isEntered: false, isVisible: false, callbacks: {leaving: testCallback1}}
             ]);
             expect(inView.intersectionObserver.elements.length).toBe(2);
         });
@@ -490,16 +490,16 @@ describe('InView public methods', () => {
 
             inView.onLeft(testElements, testCallback1);
             expect(inView.states).toStrictEqual([
-                {element: testElements[0], isEntered: false, callbacks: {left: testCallback1}},
-                {element: testElements[1], isEntered: false, callbacks: {left: testCallback1}}
+                {element: testElements[0], isEntered: false, isVisible: false, callbacks: {left: testCallback1}},
+                {element: testElements[1], isEntered: false, isVisible: false, callbacks: {left: testCallback1}}
             ]);
             expect(inView.intersectionObserver.elements.length).toBe(2);
 
             // rewrite one to test we can also pass one element
             inView.onLeft(testElements[0], testCallback2);
             expect(inView.states).toStrictEqual([
-                {element: testElements[0], isEntered: false, callbacks: {left: testCallback2}},
-                {element: testElements[1], isEntered: false, callbacks: {left: testCallback1}}
+                {element: testElements[0], isEntered: false, isVisible: false, callbacks: {left: testCallback2}},
+                {element: testElements[1], isEntered: false, isVisible: false, callbacks: {left: testCallback1}}
             ]);
             expect(inView.intersectionObserver.elements.length).toBe(2);
         });
@@ -511,16 +511,16 @@ describe('InView public methods', () => {
 
             inView.onVisible(testElements, testCallback1);
             expect(inView.states).toStrictEqual([
-                {element: testElements[0], isEntered: false, callbacks: {visible: testCallback1}},
-                {element: testElements[1], isEntered: false, callbacks: {visible: testCallback1}}
+                {element: testElements[0], isEntered: false, isVisible: false, callbacks: {visible: testCallback1}},
+                {element: testElements[1], isEntered: false, isVisible: false, callbacks: {visible: testCallback1}}
             ]);
             expect(inView.intersectionObserver.elements.length).toBe(2);
 
             // rewrite one to test we can also pass one element
             inView.onVisible(testElements[0], testCallback2);
             expect(inView.states).toStrictEqual([
-                {element: testElements[0], isEntered: false, callbacks: {visible: testCallback2}},
-                {element: testElements[1], isEntered: false, callbacks: {visible: testCallback1}}
+                {element: testElements[0], isEntered: false, isVisible: false, callbacks: {visible: testCallback2}},
+                {element: testElements[1], isEntered: false, isVisible: false, callbacks: {visible: testCallback1}}
             ]);
             expect(inView.intersectionObserver.elements.length).toBe(2);
         });
@@ -532,16 +532,16 @@ describe('InView public methods', () => {
 
             inView.onNotVisible(testElements, testCallback1);
             expect(inView.states).toStrictEqual([
-                {element: testElements[0], isEntered: false, callbacks: {left: testCallback1}},
-                {element: testElements[1], isEntered: false, callbacks: {left: testCallback1}}
+                {element: testElements[0], isEntered: false, isVisible: false, callbacks: {left: testCallback1}},
+                {element: testElements[1], isEntered: false, isVisible: false, callbacks: {left: testCallback1}}
             ]);
             expect(inView.intersectionObserver.elements.length).toBe(2);
 
             // rewrite one to test we can also pass one element
             inView.onNotVisible(testElements[0], testCallback2);
             expect(inView.states).toStrictEqual([
-                {element: testElements[0], isEntered: false, callbacks: {left: testCallback2}},
-                {element: testElements[1], isEntered: false, callbacks: {left: testCallback1}}
+                {element: testElements[0], isEntered: false, isVisible: false, callbacks: {left: testCallback2}},
+                {element: testElements[1], isEntered: false, isVisible: false, callbacks: {left: testCallback1}}
             ]);
             expect(inView.intersectionObserver.elements.length).toBe(2);
         });
@@ -565,14 +565,14 @@ describe('InView public methods', () => {
             
             inView.on('entered', testElements, testCallback1);
             expect(inView.states).toStrictEqual([
-                {element: testElements[0], isEntered: false, callbacks: {entered: testCallback1}},
-                {element: testElements[1], isEntered: false, callbacks: {entered: testCallback1}}
+                {element: testElements[0], isEntered: false, isVisible: false, callbacks: {entered: testCallback1}},
+                {element: testElements[1], isEntered: false, isVisible: false, callbacks: {entered: testCallback1}}
             ]);
             expect(inView.intersectionObserver.elements.length).toBe(2);
 
             inView.unobserve(testElements[0]);
             expect(inView.states).toStrictEqual([
-                {element: testElements[1], isEntered: false, callbacks: {entered: testCallback1}}
+                {element: testElements[1], isEntered: false, isVisible: false, callbacks: {entered: testCallback1}}
             ]);
             expect(inView.intersectionObserver.elements.length).toBe(1);
         });
@@ -603,19 +603,19 @@ describe('InView public methods', () => {
             
             inView.on('entered', testElement, testCallback1);
             expect(inView.states).toStrictEqual([
-                {element: testElement, isEntered: false, callbacks: {entered: testCallback1}}
+                {element: testElement, isEntered: false, isVisible: false, callbacks: {entered: testCallback1}}
             ]);
             expect(inView.intersectionObserver.elements.length).toBe(1);
 
             inView.on('left', testElement, testCallback2);
             expect(inView.states).toStrictEqual([
-                {element: testElement, isEntered: false, callbacks: {entered: testCallback1, left: testCallback2}},
+                {element: testElement, isEntered: false, isVisible: false, callbacks: {entered: testCallback1, left: testCallback2}},
             ]);
             expect(inView.intersectionObserver.elements.length).toBe(1);
 
             inView.unobserveEvent(testElement, 'entered');
             expect(inView.states).toStrictEqual([
-                {element: testElement, isEntered: false, callbacks: {left: testCallback2}},
+                {element: testElement, isEntered: false, isVisible: false, callbacks: {left: testCallback2}},
             ]);
             expect(inView.intersectionObserver.elements.length).toBe(1);
 
@@ -643,16 +643,16 @@ describe('InView public methods', () => {
             
             inView.on('entered', testElements, testCallback1);
             expect(inView.states).toStrictEqual([
-                {element: testElements[0], isEntered: false, callbacks: {entered: testCallback1}},
-                {element: testElements[1], isEntered: false, callbacks: {entered: testCallback1}}
+                {element: testElements[0], isEntered: false, isVisible: false, callbacks: {entered: testCallback1}},
+                {element: testElements[1], isEntered: false, isVisible: false, callbacks: {entered: testCallback1}}
             ]);
             expect(inView.intersectionObserver.elements.length).toBe(2);
 
             // add another event callback
             inView.on('leaving', testElements, testCallback2);
             expect(inView.states).toStrictEqual([
-                {element: testElements[0], isEntered: false, callbacks: {entered: testCallback1, leaving: testCallback2}},
-                {element: testElements[1], isEntered: false, callbacks: {entered: testCallback1, leaving: testCallback2}}
+                {element: testElements[0], isEntered: false, isVisible: false, callbacks: {entered: testCallback1, leaving: testCallback2}},
+                {element: testElements[1], isEntered: false, isVisible: false, callbacks: {entered: testCallback1, leaving: testCallback2}}
             ]);
             expect(inView.intersectionObserver.elements.length).toBe(2);
 
@@ -989,6 +989,162 @@ describe('InView IntersectionObserver callback', () => {
         expect(testCallbackEntering).toHaveBeenCalledTimes(1);
         expect(testCallbackLeaving).toHaveBeenCalledTimes(1);
     });
+    it('Should do onVisible once per visible time', () => {
+        const inView = new InView();
+        const testElement = 'test1';
+        const testCallbackEntered = jest.fn();
+        const testCallbackEntering = jest.fn();
+        const testCallbackLeaving = jest.fn();
+        const testCallbackLeft = jest.fn();
+        const testCallbackVisible = jest.fn();
+        
+        inView.onEntered(testElement, testCallbackEntered);
+        inView.onEntering(testElement, testCallbackEntering);
+        inView.onLeaving(testElement, testCallbackLeaving);
+        inView.onLeft(testElement, testCallbackLeft);
+        inView.onVisible(testElement, testCallbackVisible);
+
+        // setup as it is LEFT
+        let testEntries = [
+            {
+                intersectionRatio: 0,
+                isIntersecting: false,
+                target: testElement,
+            }
+        ];
+
+        inView.intersectionObserver.cb(testEntries);
+
+        expect(inView._getState(testElement).isEntered).toBe(false);
+        expect(inView._getState(testElement).isVisible).toBe(false);
+
+        expect(testCallbackEntered).toHaveBeenCalledTimes(0);
+        expect(testCallbackEntering).toHaveBeenCalledTimes(0);
+        expect(testCallbackLeaving).toHaveBeenCalledTimes(0);
+        expect(testCallbackLeft).toHaveBeenCalledTimes(1); // +1
+        expect(testCallbackVisible).toHaveBeenCalledTimes(0);
+
+        // setup as it is ENTERING
+        testEntries = [
+            {
+                intersectionRatio: 0.5,
+                isIntersecting: true,
+                target: testElement,
+            }
+        ];
+
+        inView.intersectionObserver.cb(testEntries);
+
+        expect(inView._getState(testElement).isEntered).toBe(false);
+        expect(inView._getState(testElement).isVisible).toBe(true);
+
+        expect(testCallbackEntered).toHaveBeenCalledTimes(0);
+        expect(testCallbackEntering).toHaveBeenCalledTimes(1); // +1
+        expect(testCallbackLeaving).toHaveBeenCalledTimes(0);
+        expect(testCallbackLeft).toHaveBeenCalledTimes(1);
+        expect(testCallbackVisible).toHaveBeenCalledTimes(1); // +1
+
+        // setup as it is ENTERED
+        testEntries = [
+            {
+                intersectionRatio: 1,
+                isIntersecting: true,
+                target: testElement,
+            }
+        ];
+
+        inView.intersectionObserver.cb(testEntries);
+
+        expect(inView._getState(testElement).isEntered).toBe(true);
+        expect(inView._getState(testElement).isVisible).toBe(true);
+
+        expect(testCallbackEntered).toHaveBeenCalledTimes(1); // +1
+        expect(testCallbackEntering).toHaveBeenCalledTimes(1);
+        expect(testCallbackLeaving).toHaveBeenCalledTimes(0);
+        expect(testCallbackLeft).toHaveBeenCalledTimes(1);
+        expect(testCallbackVisible).toHaveBeenCalledTimes(1); // +0 (important)
+
+        // setup as it is LEAVING
+        testEntries = [
+            {
+                intersectionRatio: 0.5,
+                isIntersecting: true,
+                target: testElement,
+            }
+        ];
+
+        inView.intersectionObserver.cb(testEntries);
+
+        expect(inView._getState(testElement).isEntered).toBe(true);
+        expect(inView._getState(testElement).isVisible).toBe(true);
+
+        expect(testCallbackEntered).toHaveBeenCalledTimes(1);
+        expect(testCallbackEntering).toHaveBeenCalledTimes(1);
+        expect(testCallbackLeaving).toHaveBeenCalledTimes(1); // +1
+        expect(testCallbackLeft).toHaveBeenCalledTimes(1);
+        expect(testCallbackVisible).toHaveBeenCalledTimes(1); // +0 (important)
+
+        // setup as it is LEFT
+        testEntries = [
+            {
+                intersectionRatio: 0,
+                isIntersecting: false,
+                target: testElement,
+            }
+        ];
+
+        inView.intersectionObserver.cb(testEntries);
+
+        expect(inView._getState(testElement).isEntered).toBe(false);
+        expect(inView._getState(testElement).isVisible).toBe(false);
+
+        expect(testCallbackEntered).toHaveBeenCalledTimes(1);
+        expect(testCallbackEntering).toHaveBeenCalledTimes(1);
+        expect(testCallbackLeaving).toHaveBeenCalledTimes(1);
+        expect(testCallbackLeft).toHaveBeenCalledTimes(2); // +1
+        expect(testCallbackVisible).toHaveBeenCalledTimes(1); // +0 (important)
+
+        // setup as it is ENTERED (to ensure we can retrigger visible since it has left)
+        testEntries = [
+            {
+                intersectionRatio: 1,
+                isIntersecting: true,
+                target: testElement,
+            }
+        ];
+
+        inView.intersectionObserver.cb(testEntries);
+
+        expect(inView._getState(testElement).isEntered).toBe(true);
+        expect(inView._getState(testElement).isVisible).toBe(true);
+
+        expect(testCallbackEntered).toHaveBeenCalledTimes(2); // +1
+        expect(testCallbackEntering).toHaveBeenCalledTimes(1);
+        expect(testCallbackLeaving).toHaveBeenCalledTimes(1);
+        expect(testCallbackLeft).toHaveBeenCalledTimes(2);
+        expect(testCallbackVisible).toHaveBeenCalledTimes(2); // +1
+
+        // setup as it is ENTERING (to reach 100% coverage)
+        inView._getState(testElement).isEntered = false; // manually setup for entering
+        testEntries = [
+            {
+                intersectionRatio: 0.5,
+                isIntersecting: true,
+                target: testElement,
+            }
+        ];
+
+        inView.intersectionObserver.cb(testEntries);
+
+        expect(inView._getState(testElement).isEntered).toBe(false);
+        expect(inView._getState(testElement).isVisible).toBe(true);
+
+        expect(testCallbackEntered).toHaveBeenCalledTimes(2);
+        expect(testCallbackEntering).toHaveBeenCalledTimes(2); // +1
+        expect(testCallbackLeaving).toHaveBeenCalledTimes(1);
+        expect(testCallbackLeft).toHaveBeenCalledTimes(2);
+        expect(testCallbackVisible).toHaveBeenCalledTimes(2); // +0 (important)
+    });
     it('Should break if nothing defined', () => {
         const inView = new InView();
         const testElements = ['test1', 'test2', 'test3', 'test4'];
@@ -997,21 +1153,25 @@ describe('InView IntersectionObserver callback', () => {
             { // will trigger ENTERED
                 element: testElements[0],
                 isEntered: false,
+                isVisible: true,
                 callbacks: {}
             },
             { // will trigger ENTERING
                 element: testElements[1],
                 isEntered: false, // important
+                isVisible: false,
                 callbacks: {}
             },
             { // will trigger LEAVING
                 element: testElements[2],
                 isEntered: true, // important
+                isVisible: true,
                 callbacks: {}
             },
             { // will trigger LEFT
                 element: testElements[3],
                 isEntered: false,
+                isVisible: true,
                 callbacks: {}
             },
         ];

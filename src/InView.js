@@ -26,6 +26,7 @@ class InView {
                 {
                     element: (dom element),
                     isEntered: false,
+                    isVisible: false,
                     callbacks: {
                         [EVENT.entering]: (function(entry)),
                         [EVENT.entered]: (function(entry)),
@@ -46,40 +47,60 @@ class InView {
                 isIntersecting,
             } = entry;
 
+            const state = this._getState(target);
+
             // ENTERED
             if(intersectionRatio === 1){
-                this._getState(target).isEntered = true;
+                state.isEntered = true;
                 const cb1 = this._getStateCallback(target, EVENT.ENTERED);
-                const cb2 = this._getStateCallback(target, EVENT.VISIBLE);
                 if(cb1) cb1(entry);
-                if(cb2) cb2(entry);
+
+                const cb2 = this._getStateCallback(target, EVENT.VISIBLE);
+                if(!state.isVisible){
+                    state.isVisible = true;
+                    if(cb2) cb2(entry);
+                }
+
                 return;
             }
 
             // LEFT
             if(intersectionRatio === 0){
-                this._getState(target).isEntered = false;
+                state.isEntered = false;
+                state.isVisible = false;
+
                 const cb1 = this._getStateCallback(target, EVENT.LEFT);
                 if(cb1) cb1(entry);
+
                 return;
             }
 
             // TRANSITION STATES
             if (isIntersecting) {
                 // LEAVING
-                if(this._getState(target).isEntered){
+                if(state.isEntered){
                     const cb1 = this._getStateCallback(target, EVENT.LEAVING);
-                    const cb2 = this._getStateCallback(target, EVENT.VISIBLE);
                     if(cb1) cb1(entry);
-                    if(cb2) cb2(entry);
+
+                    const cb2 = this._getStateCallback(target, EVENT.VISIBLE);
+                    if(!state.isVisible){
+                        state.isVisible = true;
+                        if(cb2) cb2(entry);
+                    }
+
                     return;
                 }
                 // ENTERING
                 else{
                     const cb1 = this._getStateCallback(target, EVENT.ENTERING);
-                    const cb2 = this._getStateCallback(target, EVENT.VISIBLE);
                     if(cb1) cb1(entry);
-                    if(cb2) cb2(entry);
+
+                    const cb2 = this._getStateCallback(target, EVENT.VISIBLE);
+                    if(!state.isVisible){
+                        state.isVisible = true;
+                        if(cb2) cb2(entry);
+                    }
+
                     return;
                 }
             }
@@ -112,6 +133,7 @@ class InView {
         this.states.push({
             element, 
             isEntered: false,
+            isVisible: false,
             callbacks: {},
         });
     }
