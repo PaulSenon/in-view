@@ -78,7 +78,7 @@ const inView = new InView({ rootMarginBottom: 200 });
 
 const myObjectsToLazyload = [...document.querySelectorAll('img.lazyload')]; // I cast it as a real js array because querySelectorAll does not return a clean one)
 
-inView.onEntering(myObjectToLazyload, (entry) => {
+inView.onVisible(myObjectToLazyload, (entry) => {
     const element = entry.target;
     element.src = element.dataset.src; // For example, if images, I just switch the data-src in src so the picture loads
 
@@ -87,6 +87,8 @@ inView.onEntering(myObjectToLazyload, (entry) => {
     // since here we did not registered callback on other events than 'entering', you can simply do: inView.unobserve()
 });
 ```
+
+> Note: prefer using `onVisible` over `onEntering` for lazyloading, because, considering the example above, if user refreshes with images already in viewport you'll want to trigger their lazyload when page loads.
 
 From your `InView` instance you have access to several methods. Here is the detail:
 
@@ -97,7 +99,9 @@ They are used to register a callback to a specific intersection event with the  
 * `onEntered(elementOrElements, callback)`
 * `onEntering(elementOrElements, callback)`
 * `onLeaving(elementOrElements, callback)`
+* `onVisible(elementOrElements, callback)`: _'entered' + 'entering' + 'leaving'_
 * `onLeft(elementOrElements, callback)`
+* `onNotVisible(elementOrElements, callback)`: _alias onLeft()_
 
 | Parameter | Type | Default | Description |
 |:----------|:-----|:--------|:------------|

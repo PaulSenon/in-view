@@ -8,7 +8,7 @@ describe('InView construct', () => {
     it('Should instantiate without args', () => {
         const inView = new InView();
         expect(inView.rootElement).toBe(undefined);
-        expect(inView.events).toStrictEqual(['entering', 'entered', 'leaving', 'left']);
+        expect(inView.events).toStrictEqual(['entering', 'entered', 'leaving', 'left', 'visible']);
         expect(inView.rootMargin).toBe('0px 0px 0px 0px');
         expect(inView.states).toStrictEqual([]);
         expect(inView.intersectionObserver).toBeInstanceOf(IntersectionObserverMock);
@@ -26,7 +26,7 @@ describe('InView construct', () => {
             rootMarginLeft: 4, 
         });
         expect(inView.rootElement).toBe('test');
-        expect(inView.events).toStrictEqual(['entering', 'entered', 'leaving', 'left']);
+        expect(inView.events).toStrictEqual(['entering', 'entered', 'leaving', 'left', 'visible']);
         expect(inView.rootMargin).toBe('1px 2px 3px 4px');
         expect(inView.states).toStrictEqual([]);
         expect(inView.intersectionObserver).toBeInstanceOf(IntersectionObserverMock);
@@ -287,6 +287,16 @@ describe('InView tools', () => {
             const testValue = ['test1', 'test2'];
             expect(inView._toArray(testValue)).toStrictEqual(testValue);
         });
+        it('Should cast HTMLCollection to array', () => {
+            const inView = new InView();
+            const docFragment = document.createDocumentFragment();
+            const node1 = document.createElement('test1');
+            const node2 = document.createElement('test2')
+            docFragment.appendChild(node1);
+            docFragment.appendChild(node2);
+            const myHTMLCollection = docFragment.children;
+            expect(inView._toArray(myHTMLCollection)).toStrictEqual([node1, node2]);
+        });
     });
 });
 
@@ -493,6 +503,48 @@ describe('InView public methods', () => {
             ]);
             expect(inView.intersectionObserver.elements.length).toBe(2);
         });
+        it('Should add onVisible', () => {
+            const inView = new InView();
+            const testElements = ['test1', 'test2'];
+            const testCallback1 = () => 'testCallback1';
+            const testCallback2 = () => 'testCallback2';
+
+            inView.onVisible(testElements, testCallback1);
+            expect(inView.states).toStrictEqual([
+                {element: testElements[0], isEntered: false, callbacks: {visible: testCallback1}},
+                {element: testElements[1], isEntered: false, callbacks: {visible: testCallback1}}
+            ]);
+            expect(inView.intersectionObserver.elements.length).toBe(2);
+
+            // rewrite one to test we can also pass one element
+            inView.onVisible(testElements[0], testCallback2);
+            expect(inView.states).toStrictEqual([
+                {element: testElements[0], isEntered: false, callbacks: {visible: testCallback2}},
+                {element: testElements[1], isEntered: false, callbacks: {visible: testCallback1}}
+            ]);
+            expect(inView.intersectionObserver.elements.length).toBe(2);
+        });
+        it('Should add onNotVisible (alias onLeft)', () => {
+            const inView = new InView();
+            const testElements = ['test1', 'test2'];
+            const testCallback1 = () => 'testCallback1';
+            const testCallback2 = () => 'testCallback2';
+
+            inView.onNotVisible(testElements, testCallback1);
+            expect(inView.states).toStrictEqual([
+                {element: testElements[0], isEntered: false, callbacks: {left: testCallback1}},
+                {element: testElements[1], isEntered: false, callbacks: {left: testCallback1}}
+            ]);
+            expect(inView.intersectionObserver.elements.length).toBe(2);
+
+            // rewrite one to test we can also pass one element
+            inView.onNotVisible(testElements[0], testCallback2);
+            expect(inView.states).toStrictEqual([
+                {element: testElements[0], isEntered: false, callbacks: {left: testCallback2}},
+                {element: testElements[1], isEntered: false, callbacks: {left: testCallback1}}
+            ]);
+            expect(inView.intersectionObserver.elements.length).toBe(2);
+        });
     });
 
     describe('unobserve', () => {
@@ -620,11 +672,13 @@ describe('InView IntersectionObserver callback', () => {
         const testCallbackEntering = jest.fn();
         const testCallbackLeaving = jest.fn();
         const testCallbackLeft = jest.fn();
+        const testCallbackVisible = jest.fn();
         
         inView.onEntered(testElements, testCallbackEntered);
         inView.onEntering(testElements, testCallbackEntering);
         inView.onLeaving(testElements, testCallbackLeaving);
         inView.onLeft(testElements, testCallbackLeft);
+        inView.onVisible(testElements, testCallbackVisible);
 
         // assume two are "entered"
         const testEntries = [
@@ -650,6 +704,7 @@ describe('InView IntersectionObserver callback', () => {
         expect(testCallbackEntering).toHaveBeenCalledTimes(0);
         expect(testCallbackLeaving).toHaveBeenCalledTimes(0);
         expect(testCallbackLeft).toHaveBeenCalledTimes(0);
+        expect(testCallbackVisible).toHaveBeenCalledTimes(2);
     });
     it('Should detected ENTERING', () => {
         const inView = new InView();
@@ -658,11 +713,13 @@ describe('InView IntersectionObserver callback', () => {
         const testCallbackEntering = jest.fn();
         const testCallbackLeaving = jest.fn();
         const testCallbackLeft = jest.fn();
+        const testCallbackVisible = jest.fn();
         
         inView.onEntered(testElements, testCallbackEntered);
         inView.onEntering(testElements, testCallbackEntering);
         inView.onLeaving(testElements, testCallbackLeaving);
         inView.onLeft(testElements, testCallbackLeft);
+        inView.onVisible(testElements, testCallbackVisible);
 
         // manually set isEntered to false
         inView._getState(testElements[0]).isEntered = false;
@@ -692,6 +749,7 @@ describe('InView IntersectionObserver callback', () => {
         expect(testCallbackEntering).toHaveBeenCalledTimes(2);
         expect(testCallbackLeaving).toHaveBeenCalledTimes(0);
         expect(testCallbackLeft).toHaveBeenCalledTimes(0);
+        expect(testCallbackVisible).toHaveBeenCalledTimes(2);
     });
     it('Should detected LEAVING', () => {
         const inView = new InView();
@@ -700,11 +758,13 @@ describe('InView IntersectionObserver callback', () => {
         const testCallbackEntering = jest.fn();
         const testCallbackLeaving = jest.fn();
         const testCallbackLeft = jest.fn();
+        const testCallbackVisible = jest.fn();
         
         inView.onEntered(testElements, testCallbackEntered);
         inView.onEntering(testElements, testCallbackEntering);
         inView.onLeaving(testElements, testCallbackLeaving);
         inView.onLeft(testElements, testCallbackLeft);
+        inView.onVisible(testElements, testCallbackVisible);
 
         // manually set isEntered to true
         inView._getState(testElements[0]).isEntered = true;
@@ -734,6 +794,7 @@ describe('InView IntersectionObserver callback', () => {
         expect(testCallbackEntering).toHaveBeenCalledTimes(0);
         expect(testCallbackLeaving).toHaveBeenCalledTimes(2);
         expect(testCallbackLeft).toHaveBeenCalledTimes(0);
+        expect(testCallbackVisible).toHaveBeenCalledTimes(2);
     });
     it('Should detected LEFT', () => {
         const inView = new InView();
@@ -742,11 +803,13 @@ describe('InView IntersectionObserver callback', () => {
         const testCallbackEntering = jest.fn();
         const testCallbackLeaving = jest.fn();
         const testCallbackLeft = jest.fn();
+        const testCallbackVisible = jest.fn();
         
         inView.onEntered(testElements, testCallbackEntered);
         inView.onEntering(testElements, testCallbackEntering);
         inView.onLeaving(testElements, testCallbackLeaving);
         inView.onLeft(testElements, testCallbackLeft);
+        inView.onVisible(testElements, testCallbackVisible);
 
         // manually set isEntered to true
         inView._getState(testElements[0]).isEntered = true;
@@ -776,6 +839,155 @@ describe('InView IntersectionObserver callback', () => {
         expect(testCallbackEntering).toHaveBeenCalledTimes(0);
         expect(testCallbackLeaving).toHaveBeenCalledTimes(0);
         expect(testCallbackLeft).toHaveBeenCalledTimes(2);
+        expect(testCallbackVisible).toHaveBeenCalledTimes(0);
+    });
+    it('Should detected VISIBLE', () => {
+        const inView = new InView();
+        const testElements = ['test1', 'test2', 'test3', 'test4'];
+        const testCallbackEntered = jest.fn();
+        const testCallbackEntering = jest.fn();
+        const testCallbackLeaving = jest.fn();
+        const testCallbackLeft = jest.fn();
+        const testCallbackVisible = jest.fn();
+        
+        inView.onEntered(testElements, testCallbackEntered);
+        inView.onEntering(testElements, testCallbackEntering);
+        inView.onLeaving(testElements, testCallbackLeaving);
+        inView.onLeft(testElements, testCallbackLeft);
+        inView.onVisible(testElements, testCallbackVisible);
+
+        // manually set isEntered to true for 'leaving')
+        inView._getState(testElements[2]).isEntered = true;
+
+        // assume two are "entered"
+        const testEntries = [
+            { // will trigger ENTERED && VISIBLE
+                intersectionRatio: 1, // important
+                isIntersecting: false,
+                target: testElements[0],
+            },
+            { // will trigger ENTERING && VISIBLE
+                intersectionRatio: 0.5, // important
+                isIntersecting: true, // important
+                target: testElements[1],
+            },
+            { // will trigger LEAVING && VISIBLE
+                intersectionRatio: 0.5, // important
+                isIntersecting: true, // important
+                target: testElements[2],
+            },
+            { // will trigger LEFT
+                intersectionRatio: 0, // important
+                isIntersecting: true,
+                target: testElements[3],
+            },
+        ];
+
+        inView.intersectionObserver.cb(testEntries);
+
+        expect(inView._getState(testElements[0]).isEntered).toBe(true);
+        expect(inView._getState(testElements[1]).isEntered).toBe(false);
+        expect(inView._getState(testElements[2]).isEntered).toBe(true);
+        expect(inView._getState(testElements[1]).isEntered).toBe(false);
+
+        expect(testCallbackEntered).toHaveBeenCalledTimes(1);
+        expect(testCallbackEntering).toHaveBeenCalledTimes(1);
+        expect(testCallbackLeaving).toHaveBeenCalledTimes(1);
+        expect(testCallbackLeft).toHaveBeenCalledTimes(1);
+        expect(testCallbackVisible).toHaveBeenCalledTimes(3);
+    });
+    it('Should not break if one callback is not defined (1)', () => {
+        const inView = new InView();
+        const testElements = ['test1', 'test2', 'test3', 'test4'];
+        const testCallbackVisible = jest.fn();
+        
+        inView.onVisible(testElements, testCallbackVisible);
+
+        // manually set isEntered to true for 'leaving')
+        inView._getState(testElements[2]).isEntered = true;
+
+        // assume two are "entered"
+        const testEntries = [
+            { // will trigger ENTERED && VISIBLE
+                intersectionRatio: 1, // important
+                isIntersecting: false,
+                target: testElements[0],
+            },
+            { // will trigger ENTERING && VISIBLE
+                intersectionRatio: 0.5, // important
+                isIntersecting: true, // important
+                target: testElements[1],
+            },
+            { // will trigger LEAVING && VISIBLE
+                intersectionRatio: 0.5, // important
+                isIntersecting: true, // important
+                target: testElements[2],
+            },
+            { // will trigger LEFT
+                intersectionRatio: 0, // important
+                isIntersecting: true,
+                target: testElements[3],
+            },
+        ];
+
+        inView.intersectionObserver.cb(testEntries);
+
+        expect(inView._getState(testElements[0]).isEntered).toBe(true);
+        expect(inView._getState(testElements[1]).isEntered).toBe(false);
+        expect(inView._getState(testElements[2]).isEntered).toBe(true);
+        expect(inView._getState(testElements[1]).isEntered).toBe(false);
+
+        expect(testCallbackVisible).toHaveBeenCalledTimes(3);
+    });
+    it('Should not break if one callback is not defined (2)', () => {
+        const inView = new InView();
+        const testElements = ['test1', 'test2', 'test3', 'test4'];
+        const testCallbackEntered = jest.fn();
+        const testCallbackEntering = jest.fn();
+        const testCallbackLeaving = jest.fn();
+        const testCallbackVisible = jest.fn();
+        
+        inView.onEntered(testElements, testCallbackEntered);
+        inView.onEntering(testElements, testCallbackEntering);
+        inView.onLeaving(testElements, testCallbackLeaving);
+
+        // manually set isEntered to true for 'leaving')
+        inView._getState(testElements[2]).isEntered = true;
+
+        // assume two are "entered"
+        const testEntries = [
+            { // will trigger ENTERED && VISIBLE
+                intersectionRatio: 1, // important
+                isIntersecting: false,
+                target: testElements[0],
+            },
+            { // will trigger ENTERING && VISIBLE
+                intersectionRatio: 0.5, // important
+                isIntersecting: true, // important
+                target: testElements[1],
+            },
+            { // will trigger LEAVING && VISIBLE
+                intersectionRatio: 0.5, // important
+                isIntersecting: true, // important
+                target: testElements[2],
+            },
+            { // will trigger LEFT
+                intersectionRatio: 0, // important
+                isIntersecting: true,
+                target: testElements[3],
+            },
+        ];
+
+        inView.intersectionObserver.cb(testEntries);
+
+        expect(inView._getState(testElements[0]).isEntered).toBe(true);
+        expect(inView._getState(testElements[1]).isEntered).toBe(false);
+        expect(inView._getState(testElements[2]).isEntered).toBe(true);
+        expect(inView._getState(testElements[1]).isEntered).toBe(false);
+
+        expect(testCallbackEntered).toHaveBeenCalledTimes(1);
+        expect(testCallbackEntering).toHaveBeenCalledTimes(1);
+        expect(testCallbackLeaving).toHaveBeenCalledTimes(1);
     });
     it('Should break if nothing defined', () => {
         const inView = new InView();
@@ -842,11 +1054,13 @@ describe('InView IntersectionObserver callback', () => {
         const testCallbackEntering = jest.fn();
         const testCallbackLeaving = jest.fn();
         const testCallbackLeft = jest.fn();
+        const testCallbackVisible = jest.fn();
         
         inView.onEntered(testElement, testCallbackEntered);
         inView.onEntering(testElement, testCallbackEntering);
         inView.onLeaving(testElement, testCallbackLeaving);
         inView.onLeft(testElement, testCallbackLeft);
+        inView.onVisible(testElement, testCallbackVisible);
 
         // assume two are "entering"
         const testEntries = [
@@ -865,5 +1079,6 @@ describe('InView IntersectionObserver callback', () => {
         expect(testCallbackEntering).toHaveBeenCalledTimes(0);
         expect(testCallbackLeaving).toHaveBeenCalledTimes(0);
         expect(testCallbackLeft).toHaveBeenCalledTimes(0);
+        expect(testCallbackVisible).toHaveBeenCalledTimes(0);
     });
 });

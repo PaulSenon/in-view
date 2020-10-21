@@ -3,6 +3,7 @@ const EVENT = {
     ENTERED: 'entered',
     LEAVING: 'leaving',
     LEFT: 'left',
+    VISIBLE: 'visible',
 };
 const isEventValid = (event) => Object.values(EVENT).includes(event);
 
@@ -48,16 +49,18 @@ class InView {
             // ENTERED
             if(intersectionRatio === 1){
                 this._getState(target).isEntered = true;
-                const cb = this._getStateCallback(target, EVENT.ENTERED);
-                if(cb) cb(entry);
+                const cb1 = this._getStateCallback(target, EVENT.ENTERED);
+                const cb2 = this._getStateCallback(target, EVENT.VISIBLE);
+                if(cb1) cb1(entry);
+                if(cb2) cb2(entry);
                 return;
             }
 
             // LEFT
             if(intersectionRatio === 0){
                 this._getState(target).isEntered = false;
-                const cb = this._getStateCallback(target, EVENT.LEFT);
-                if(cb) cb(entry);
+                const cb1 = this._getStateCallback(target, EVENT.LEFT);
+                if(cb1) cb1(entry);
                 return;
             }
 
@@ -65,14 +68,18 @@ class InView {
             if (isIntersecting) {
                 // LEAVING
                 if(this._getState(target).isEntered){
-                    const cb = this._getStateCallback(target, EVENT.LEAVING);
-                    if(cb) cb(entry);
+                    const cb1 = this._getStateCallback(target, EVENT.LEAVING);
+                    const cb2 = this._getStateCallback(target, EVENT.VISIBLE);
+                    if(cb1) cb1(entry);
+                    if(cb2) cb2(entry);
                     return;
                 }
                 // ENTERING
                 else{
-                    const cb = this._getStateCallback(target, EVENT.ENTERING);
-                    if(cb) cb(entry);
+                    const cb1 = this._getStateCallback(target, EVENT.ENTERING);
+                    const cb2 = this._getStateCallback(target, EVENT.VISIBLE);
+                    if(cb1) cb1(entry);
+                    if(cb2) cb2(entry);
                     return;
                 }
             }
@@ -140,7 +147,9 @@ class InView {
 
     /** ensure it's always an array of elements */
     _toArray(elementOrElements){
-        return Array.isArray(elementOrElements) ? elementOrElements : [elementOrElements];
+        if(elementOrElements instanceof HTMLCollection) return [...elementOrElements];
+        if(Array.isArray(elementOrElements)) return elementOrElements;
+        return [elementOrElements];
     }
 
     onEntered(elementOrElements, callback){
@@ -153,6 +162,14 @@ class InView {
         this.on(EVENT.LEAVING, elementOrElements, callback);
     }
     onLeft(elementOrElements, callback){
+        this.on(EVENT.LEFT, elementOrElements, callback);
+    }
+    // work as entered + entering + leaving
+    onVisible(elementOrElements, callback){
+        this.on(EVENT.VISIBLE, elementOrElements, callback);
+    }
+    // work alias of left 
+    onNotVisible(elementOrElements, callback){
         this.on(EVENT.LEFT, elementOrElements, callback);
     }
 
