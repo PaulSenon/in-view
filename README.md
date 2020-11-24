@@ -80,17 +80,18 @@ const inView = new InView({ rootMarginBottom: 200 });
 
 const myObjectsToLazyload = document.querySelectorAll('img.lazyload'); // no worry, even this HTMLCollection (not really an array) is handled by the lib
 
-inView.onVisible(myObjectToLazyload, (entry) => {
+inView.onceVisible(myObjectToLazyload, (entry) => {
     const element = entry.target;
     element.src = element.dataset.src; // For example, for images, I just set img src with the data-src so the picture loads
 
-    // here we don't want to trigger the lazyload anymore on this particular image so we unregister it
-    inView.unobserveEvent(element, 'visible');
-    // since here we did not registered callback on other events than 'visible', we can simply do: inView.unobserve()
+    // the following lines are not required because you are using ONCEVisible, but if you were using ONVisible you might want on implement something like this:
+        // // here we don't want to trigger the lazyload anymore on this particular image so we unregister it
+        // inView.unobserveEvent(element, 'visible');
+        // // since here we did not registered callback on other events than 'visible', we can simply do: inView.unobserve()
 });
 ```
 
-> Note: prefer using `onVisible` over `onEntering` for lazyloading, because, considering the example above, if user refreshes with images already in viewport (page not scrolled to top) you'll want to trigger their lazyload when page loads.
+> Note: prefer using `onVisible` (or `onceVisible`) over `onEntering` (or `onceEntering`) for lazyloading, because, considering the example above, if user refreshes with images already in viewport (page not scrolled to top) you'll want to trigger their lazyload when page loads.
 
 From your `InView` instance you have access to several methods. Here is the detail:
 
@@ -98,12 +99,23 @@ From your `InView` instance you have access to several methods. Here is the deta
 
 They are used to register a callback to a specific intersection event with the inView rootElement
 
+#### ON: (will be triggering each time)
+
 * `onEntered(elementOrElements, callback)`
 * `onEntering(elementOrElements, callback)`
 * `onLeaving(elementOrElements, callback)`
 * `onVisible(elementOrElements, callback)`: _'entered' + 'entering' + 'leaving' but it ensure it is called only once each time it's visible_
 * `onLeft(elementOrElements, callback)`
 * `onNotVisible(elementOrElements, callback)`: _alias onLeft()_
+
+#### ONCE: (will be trigger once then unobserved)
+
+* `onceEntered(elementOrElements, callback)`
+* `onceEntering(elementOrElements, callback)`
+* `onceLeaving(elementOrElements, callback)`
+* `onceVisible(elementOrElements, callback)`: _'entered' + 'entering' + 'leaving' but it ensure it is called only once each time it's visible_
+* `onceLeft(elementOrElements, callback)`
+* `onceNotVisible(elementOrElements, callback)`: _alias onLeft()_
 
 | Parameter | Type | Default | Description |
 |:----------|:-----|:--------|:------------|
