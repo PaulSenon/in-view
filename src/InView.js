@@ -48,6 +48,7 @@ class InView {
             } = entry;
 
             const state = this._getState(target);
+            if(!state) return;
 
             // ENTERED
             if(intersectionRatio === 1){
@@ -195,6 +196,27 @@ class InView {
         this.on(EVENT.LEFT, elementOrElements, callback);
     }
 
+    onceEntered(elementOrElements, callback){
+        this.once(EVENT.ENTERED, elementOrElements, callback);
+    }
+    onceEntering(elementOrElements, callback){
+        this.once(EVENT.ENTERING, elementOrElements, callback);
+    }
+    onceLeaving(elementOrElements, callback){
+        this.once(EVENT.LEAVING, elementOrElements, callback);
+    }
+    onceLeft(elementOrElements, callback){
+        this.once(EVENT.LEFT, elementOrElements, callback);
+    }
+    // work as entered + entering + leaving
+    onceVisible(elementOrElements, callback){
+        this.once(EVENT.VISIBLE, elementOrElements, callback);
+    }
+    // work alias of left 
+    onceNotVisible(elementOrElements, callback){
+        this.once(EVENT.LEFT, elementOrElements, callback);
+    }
+
     on(event, elementOrElements, callback){
         elementOrElements = this._toArray(elementOrElements);
         for(let element of elementOrElements){
@@ -202,6 +224,24 @@ class InView {
             const doObserve = !this._getState(element);
 
             this._addStateCallback(element, event, callback);
+
+            // if it's the first one we add it to observer
+            if(doObserve){
+                this.intersectionObserver.observe(element);
+            }
+        }
+    }
+
+    once(event, elementOrElements, callback){
+        elementOrElements = this._toArray(elementOrElements);
+        for(let element of elementOrElements){
+            // need do be done before so we know if we added the very first callback
+            const doObserve = !this._getState(element);
+
+            this._addStateCallback(element, event, (entry) => {
+                callback(entry);
+                this.unobserveEvent(element, event);
+            });
 
             // if it's the first one we add it to observer
             if(doObserve){
