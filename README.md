@@ -16,17 +16,7 @@ Mainly to lazyload stuff, but it can also be used to deactivate/unload stuff tha
 
 ### 1) install the lib
 
-First make sure you have an ssh access to euronews's bitbucket. (if you git push/pull/... from a bash, on one of euronews's repositories, without typing your login/password, it is the case).
-
-Then: 
-
-* `$ yarn add git+ssh://git@bitbucket.org/euronews-sdd/in-view.git#WANTED_VERSION`
-
-OR
-
-* `$ npm install git+ssh://git@bitbucket.org/euronews-sdd/in-view.git#WANTED_VERSION`
-
-Mind to replace `WANTED_VERSION` by a valid tag or branch name (e.g. `1.0.0` or `master`);
+(TODO)
 
 ### 2) Require it where you need it
 
